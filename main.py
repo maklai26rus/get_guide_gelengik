@@ -17,16 +17,28 @@ def get_url(url):
 
 
 def get_url_category(url_category):
-    """Перебираем выбраную категорию и получаем каждый элемент """
-    _spisok_url = []
+    """Перебираем выбраную категорию и получаем каждый элемент в выбраной категории
+    https://gelend.spravker.ru/avto.htm
+    получаем
+    'https://gelend.spravker.ru/avtoaksessuary/"""
+    url_page_href = []
+    url_category_data = []
     for url_cat in url_category:
         response = requests.get(url_cat)
         soup = BeautifulSoup(response.text, "lxml")
-        pages_count = soup.find_all("ul", class_="list-count list-count--rows list-count--inversion list-count--wide")
-        url_page_href = [fi.find("a").get('href') for fi in pages_count]
+        pages_count = soup.find("ul",
+                                class_="list-count list-count--rows list-count--inversion list-count--wide").find_all(
+            'li')
+        try:
+            for i in pages_count:
+                _url_cat = i.a.get('href')
+                url_page_href.append(_url_cat)
+        except AttributeError:
+            continue
+            # break
         url_category_data = [URL + i for i in url_page_href]
-        _spisok_url.append(url_category_data)
-    return _spisok_url
+
+    return url_category_data
 
 
 # def get_data_category(category_data):
@@ -45,20 +57,17 @@ def get_url_category(url_category):
 
 def get_max_page(url):
     """Проверка максимального количства переходов"""
-    k = True
-    n = 0
+    _true = True
+    _page = 0
     list_url_page = []
-    while k:
-        n += 1
-        ur = f'{url}page-{n}/'
-        # break
+    while _true:
+        _page += 1
+        ur = f'{url}page-{_page}/'
         response = requests.get(ur)
-        print(response.status_code, ur)
         if response.status_code == 200:
             list_url_page.append(ur)
         else:
-            # del list_url_page[n - 1]
-            k = False
+            _true = False
     return list_url_page
 
 
@@ -67,12 +76,12 @@ def save_cvc_page(url):
     for i in url:
         response = requests.get(i)
         soup = BeautifulSoup(response.text, "lxml")
-        pages_count = soup.find_all("a", class_="org-widget-header__title-link")
+        name_org = soup.find_all("a", class_="org-widget-header__title-link")
         telefon = soup.find_all("div", class_="org-widget__spec")
         try:
-            for ik in range(len(pages_count)):
+            for ik in range(len(name_org)):
                 with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-                    ff.write(str(pages_count[ik].text.strip() + ',' + telefon[ik].dd.text.strip() + "\n"))
+                    ff.write(str(name_org[ik].text.strip() + ',' + telefon[ik].dd.text.strip() + "\n"))
         except AttributeError:
             pass
 
@@ -82,9 +91,9 @@ def main():
     category = get_url(URL)
     category_data = get_url_category(category)
     for i in category_data:
-        kt = get_max_page(i[0])
+        kt = get_max_page(i)
         save_cvc_page(kt)
-
+    #
     toc = time.perf_counter()
     print(f"Вычисление заняло {toc - tic:0.4f} секунд")
 
