@@ -3,7 +3,6 @@ import requests
 import time
 
 URL = "https://gelend.spravker.ru"
-FLIGHT_DATA = []
 
 
 def get_url(url):
@@ -35,24 +34,9 @@ def get_url_category(url_category):
                 url_page_href.append(_url_cat)
         except AttributeError:
             continue
-            # break
         url_category_data = [URL + i for i in url_page_href]
 
     return url_category_data
-
-
-# def get_data_category(category_data):
-#     """Погрухаемся в глубь категорий"""
-#     _spiso = []
-#     for url_cat in category_data:
-#         response = requests.get(url_cat[0])
-#         soup = BeautifulSoup(response.text, "lxml")
-#         pages_count = soup.find_all("div", class_="org-widget")
-#         url_page_href = [fi.find("a").get('href') for fi in pages_count]
-#         _spiso.append(url_page_href)
-#
-#         # url_category_data = [URL + i for i in url_page_href]
-#     return _spiso
 
 
 def get_max_page(url):
@@ -76,12 +60,12 @@ def save_cvc_page(url):
     for i in url:
         response = requests.get(i)
         soup = BeautifulSoup(response.text, "lxml")
-        name_org = soup.find_all("a", class_="org-widget-header__title-link")
-        telefon = soup.find_all("div", class_="org-widget__spec")
+        _name_org = soup.find_all("a", class_="org-widget-header__title-link")
+        _phone = soup.find_all("div", class_="org-widget__spec")
         try:
-            for ik in range(len(name_org)):
+            for _data in range(len(_name_org)):
                 with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-                    ff.write(str(name_org[ik].text.strip() + ',' + telefon[ik].dd.text.strip() + "\n"))
+                    ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
         except AttributeError:
             pass
 
