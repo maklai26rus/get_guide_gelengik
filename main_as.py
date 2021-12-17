@@ -14,7 +14,7 @@ FINAL_URL = []
 
 
 async def gather_data():
-    connector = aiohttp.TCPConnector(limit=50)
+    connector = aiohttp.TCPConnector(limit=20)
     async with aiohttp.ClientSession(connector=connector) as session:
         response = await session.get(URL, headers=headers)
 
@@ -112,10 +112,10 @@ async def save_cvc_page(session, page):
                 _phone = soup.find_all("div", class_="org-widget__spec")
                 for _data in range(len(_name_org)):
                     _d = str(_name_org[_data].text.strip())
-                    with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
+                    with open(f'BD20.cvc', 'a', encoding='utf-8') as ff:
                         ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
             except AttributeError as err:
-                with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
+                with open(f'BD20.cvc', 'a', encoding='utf-8') as ff:
                     ff.write(_d + f' нету номера {err} \n')
                 continue
 
