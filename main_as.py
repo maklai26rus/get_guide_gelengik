@@ -14,7 +14,8 @@ FINAL_URL = []
 
 
 async def gather_data():
-    async with aiohttp.ClientSession() as session:
+    connector = aiohttp.TCPConnector(limit=50)
+    async with aiohttp.ClientSession(connector) as session:
         response = await session.get(URL, headers=headers)
 
         soup = BeautifulSoup(await response.text(), "lxml")
