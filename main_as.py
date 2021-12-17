@@ -13,15 +13,6 @@ headers = {
 FINAL_URL = []
 
 
-# def get_url(url):
-#     """Получаем все страницы с категориями"""
-#     response = requests.get(url)
-#     soup = BeautifulSoup(response.text, "lxml")
-#     pages_count = soup.find_all("h3", class_="category-widget__title")
-#     url_page_href = [fi.find("a").get('href') for fi in pages_count]
-#     url_category = [URL + i for i in url_page_href]
-#     return url_category
-
 async def gather_data():
     async with aiohttp.ClientSession() as session:
         response = await session.get(URL, headers=headers)
@@ -58,8 +49,8 @@ async def get_page_data(session, page):
                 continue
         url_category_data = [URL + i for i in url_page_href]
         for _page in url_category_data:
-            _p = get_max_page(_page)
-            await save_cvc_page(_p)
+            FINAL_URL.append(get_max_page(_page))
+            # _p = get_max_page(_page)
 
         # return url_category_data
 
@@ -78,6 +69,30 @@ def get_max_page(url):
         else:
             _true = False
     return list_url_page
+
+
+# async def save_cvc_page(url):
+#     """получаем данные из каждой категории """
+#     _d = None
+#
+#     for i in url:
+#         async with aiohttp.ClientSession() as session:
+#             response = await session.get(i, headers=headers)
+#             with open(f'save_url.txt', 'a', encoding='utf-8') as ff:
+#                 ff.write(i + "\n")
+#             # response = requests.get(i)
+#             try:
+#                 soup = BeautifulSoup(await response.text(), "lxml")
+#                 _name_org = soup.find_all("a", class_="org-widget-header__title-link")
+#                 _phone = soup.find_all("div", class_="org-widget__spec")
+#                 for _data in range(len(_name_org)):
+#                     _d = str(_name_org[_data].text.strip())
+#                     with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
+#                         ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
+#             except AttributeError as err:
+#                 with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
+#                     ff.write(_d + f' нету номера {err} \n')
+#                 continue
 
 
 async def save_cvc_page(url):
@@ -104,6 +119,7 @@ async def save_cvc_page(url):
 def main():
     tic = time.perf_counter()
     asyncio.run(gather_data())
+    asyncio.run(save_cvc_page(FINAL_URL))
     toc = time.perf_counter()
     print(f"Вычисление заняло {toc - tic:0.4f} секунд")
 
