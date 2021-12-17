@@ -10,8 +10,6 @@ headers = {
                   '(KHTML, like Gecko) Chrome/81.0.4044.96 YaBrowser/20.4.0.1461 Yowser/2.5 Safari/537.36',
     'accept': '*/*'}
 
-FINAL_URL = []
-
 
 async def gather_data():
     connector = aiohttp.TCPConnector(limit=20)
@@ -53,10 +51,6 @@ async def get_page_data(session, page):
             _list_page = get_max_page(_page)
             await save_cvc_page(session, _list_page)
 
-            # _p = get_max_page(_page)
-
-        # return url_category_data
-
 
 def get_max_page(url):
     """Проверка максимального количства переходов"""
@@ -74,30 +68,6 @@ def get_max_page(url):
     return list_url_page
 
 
-# async def save_cvc_page(url):
-#     """получаем данные из каждой категории """
-#     _d = None
-#
-#     for i in url:
-#         async with aiohttp.ClientSession() as session:
-#             response = await session.get(i, headers=headers)
-#             with open(f'save_url.txt', 'a', encoding='utf-8') as ff:
-#                 ff.write(i + "\n")
-#             # response = requests.get(i)
-#             try:
-#                 soup = BeautifulSoup(await response.text(), "lxml")
-#                 _name_org = soup.find_all("a", class_="org-widget-header__title-link")
-#                 _phone = soup.find_all("div", class_="org-widget__spec")
-#                 for _data in range(len(_name_org)):
-#                     _d = str(_name_org[_data].text.strip())
-#                     with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-#                         ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
-#             except AttributeError as err:
-#                 with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-#                     ff.write(_d + f' нету номера {err} \n')
-#                 continue
-
-
 async def save_cvc_page(session, page):
     """получаем данные из каждой категории """
     _d = None
@@ -105,7 +75,6 @@ async def save_cvc_page(session, page):
         with open(f'save_url.txt', 'a', encoding='utf-8') as ff:
             ff.write(i + "\n")
         async with session.get(url=i, headers=headers) as response:
-            # response = requests.get(i)
             try:
                 soup = BeautifulSoup(await response.text(), "lxml")
                 _name_org = soup.find_all("a", class_="org-widget-header__title-link")
@@ -115,7 +84,7 @@ async def save_cvc_page(session, page):
                     with open(f'BD20.cvc', 'a', encoding='utf-8') as ff:
                         ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
             except AttributeError as err:
-                with open(f'BD20.cvc', 'a', encoding='utf-8') as ff:
+                with open(f'BD_none.cvc', 'a', encoding='utf-8') as ff:
                     ff.write(_d + f' нету номера {err} \n')
                 continue
 
@@ -123,7 +92,6 @@ async def save_cvc_page(session, page):
 def main():
     tic = time.perf_counter()
     asyncio.run(gather_data())
-    # asyncio.run(save_cvc_page(FINAL_URL))
     toc = time.perf_counter()
     print(f"Вычисление заняло {toc - tic:0.4f} секунд")
 
