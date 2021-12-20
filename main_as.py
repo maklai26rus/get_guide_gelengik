@@ -12,6 +12,8 @@ headers = {
 
 
 async def gather_data():
+    """ Принимает главный урл и ищет все ссылки на странице
+    возращает все ссулки с страницы"""
     connector = aiohttp.TCPConnector(limit=20)
     async with aiohttp.ClientSession(connector=connector) as session:
         response = await session.get(URL, headers=headers)
@@ -53,7 +55,8 @@ async def get_page_data(session, page):
 
 
 def get_max_page(url):
-    """Проверка максимального количства переходов"""
+    """Проверка максимального количства переходов
+    возращает количесво страниц с урл"""
     _true = True
     _page = 0
     list_url_page = []
@@ -69,7 +72,8 @@ def get_max_page(url):
 
 
 async def save_cvc_page(session, page):
-    """получаем данные из каждой категории """
+    """получаем данные из каждой категории
+    записываем в файл"""
     _d = None
     for i in page:
         with open(f'save_url.txt', 'a', encoding='utf-8') as ff:
@@ -98,27 +102,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# def save_cvc_page1():
-#     """получаем данные из каждой категории """
-#     # for i in url:
-#     kki = ['https://gelend.spravker.ru/shtrafstoianki/page-1/', 'https://gelend.spravker.ru/avtosalony/']
-#     _d = None
-#     for i in kki:
-#         response = requests.get(i)
-#         try:
-#             soup = BeautifulSoup(response.text, "lxml")
-#             _name_org = soup.find_all("a", class_="org-widget-header__title-link")
-#             _phone = soup.find_all("div", class_="org-widget__spec")
-#             for _data in range(len(_name_org)):
-#                 _d = str(_name_org[_data].text.strip())
-#                 with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-#                     # print(_phone[_data].dd.text.strip())
-#                     ff.write(str(_name_org[_data].text.strip() + ',' + _phone[_data].dd.text.strip() + "\n"))
-#         except AttributeError as err:
-#             with open(f'BD.cvc', 'a', encoding='utf-8') as ff:
-#                 ff.write(_d + ' нету номера \n')
-#             continue
-#
-#
-# save_cvc_page1()
